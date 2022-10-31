@@ -11,21 +11,21 @@ import (
 	"net/http"
 )
 
-type ProductServiceImpl struct {
+type ProductService struct {
 	ProductRepository repository.ProductRepository
 	UserService       pb.UserServiceClient
 	DB                *sql.DB
 }
 
 func NewProductService(productRepository repository.ProductRepository, userService pb.UserServiceClient, db *sql.DB) pb.ProductServiceServer {
-	return &ProductServiceImpl{
+	return &ProductService{
 		ProductRepository: productRepository,
 		UserService:       userService,
 		DB:                db,
 	}
 }
 
-func (p ProductServiceImpl) ListProduct(ctx context.Context, empty *emptypb.Empty) (*pb.ListProductResponse, error) {
+func (p ProductService) ListProduct(ctx context.Context, empty *emptypb.Empty) (*pb.ListProductResponse, error) {
 	tx, err := p.DB.Begin()
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (p ProductServiceImpl) ListProduct(ctx context.Context, empty *emptypb.Empt
 	}, nil
 }
 
-func (p ProductServiceImpl) GetProduct(ctx context.Context, req *pb.GetProductIdRequest) (*pb.GetProductResponse, error) {
+func (p ProductService) GetProduct(ctx context.Context, req *pb.GetProductIdRequest) (*pb.GetProductResponse, error) {
 	tx, err := p.DB.Begin()
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (p ProductServiceImpl) GetProduct(ctx context.Context, req *pb.GetProductId
 	}, nil
 }
 
-func (p ProductServiceImpl) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+func (p ProductService) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
 	tx, err := p.DB.Begin()
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (p ProductServiceImpl) CreateProduct(ctx context.Context, req *pb.CreatePro
 	}, nil
 }
 
-func (p ProductServiceImpl) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.UpdateProductResponse, error) {
+func (p ProductService) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.UpdateProductResponse, error) {
 	tx, err := p.DB.Begin()
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func (p ProductServiceImpl) UpdateProduct(ctx context.Context, req *pb.UpdatePro
 	}, nil
 }
 
-func (p ProductServiceImpl) DeleteProduct(ctx context.Context, req *pb.GetProductIdRequest) (*pb.DeleteProductResponse, error) {
+func (p ProductService) DeleteProduct(ctx context.Context, req *pb.GetProductIdRequest) (*pb.DeleteProductResponse, error) {
 	tx, err := p.DB.Begin()
 	if err != nil {
 		return nil, err

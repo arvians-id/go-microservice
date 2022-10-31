@@ -16,6 +16,62 @@ services:
     networks:
       - microservices
     restart: always
+  api_gateway:
+    build: ./api-gateway
+    container_name: go_microservice_api_gateway
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    env_file:
+      - ./api-gateway/pkg/config/envs/dev.env
+    networks:
+      - microservices
+    depends_on:
+      - db
+    restart: always
+  auth_service:
+    build: ./auth-service
+    container_name: go_microservice_auth_service
+    ports:
+      - "50051:50051"
+    expose:
+      - "50051"
+    env_file:
+      - ./auth-service/internal/config/envs/dev.env
+    networks:
+      - microservices
+    depends_on:
+      - db
+    restart: always
+  product_service:
+    build: ./product-service
+    container_name: go_microservice_product_service
+    ports:
+      - "50052:50052"
+    expose:
+      - "50052"
+    env_file:
+      - ./product-service/internal/config/envs/dev.env
+    networks:
+      - microservices
+    depends_on:
+      - db
+    restart: always
+  user_service:
+    build: ./user-service
+    container_name: go_microservice_user_service
+    ports:
+      - "50053:50053"
+    expose:
+      - "50053"
+    env_file:
+      - ./user-service/internal/config/envs/dev.env
+    networks:
+      - microservices
+    depends_on:
+      - db
+    restart: always
 
 networks:
   microservices:

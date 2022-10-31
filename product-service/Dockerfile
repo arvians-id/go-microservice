@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN go build -o product-service
+RUN go build -o /product-service/cmd/server
 
 EXPOSE 8080
 
-CMD ./product-service
+CMD ./product-service/cmd/server

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.21.9
-// source: internal/pb/product.proto
+// source: internal/pb/auth.proto
 
 package pb
 
@@ -701,5 +701,5 @@ var _AuthService_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/pb/product.proto",
+	Metadata: "internal/pb/auth.proto",
 }

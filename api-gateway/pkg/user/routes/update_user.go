@@ -4,10 +4,10 @@ import (
 	"github.com/arvians-id/go-microservice/api-gateway/pkg/user/pb"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type UpdateUserRequest struct {
-	Id       int64  `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -20,8 +20,9 @@ func UpdateUser(ctx *gin.Context, c pb.UserServiceClient) {
 		return
 	}
 
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	response, err := c.UpdateUser(ctx, &pb.UpdateUserRequest{
-		Id:       req.Id,
+		Id:       id,
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: req.Password,

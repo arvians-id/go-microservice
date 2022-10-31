@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN go build -o auth-service
+RUN go build -o /auth-service/cmd/server
 
 EXPOSE 8080
 
-CMD ./auth-service
+CMD ./auth-service/cmd/server
