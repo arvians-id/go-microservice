@@ -4,10 +4,10 @@ import (
 	"github.com/arvians-id/go-microservice/api-gateway/pkg/product/pb"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type UpdateProductRequest struct {
-	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -20,8 +20,14 @@ func UpdateProduct(ctx *gin.Context, c pb.ProductServiceClient) {
 		return
 	}
 
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	response, err := c.UpdateProduct(ctx, &pb.UpdateProductRequest{
-		Id:          request.Id,
+		Id:          id,
 		Name:        request.Name,
 		Description: request.Description,
 	})

@@ -13,7 +13,7 @@ import (
 	"net"
 )
 
-func NewInitializedDatabase(configuration config.Config) (*sql.DB, error) {
+func NewInitializedDatabase(configuration *config.Config) (*sql.DB, error) {
 	db, err := config.NewPostgresSQL(configuration)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func NewInitializedDatabase(configuration config.Config) (*sql.DB, error) {
 	return db, nil
 }
 
-func NewInitializedServer(configuration config.Config) (pb.AuthServiceServer, error) {
+func NewInitializedServer(configuration *config.Config) (pb.AuthServiceServer, error) {
 	db, err := NewInitializedDatabase(configuration)
 	if err != nil {
 		return nil, err

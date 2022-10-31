@@ -3,14 +3,17 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/arvians-id/go-microservice/product-service/internal/client"
 	"github.com/arvians-id/go-microservice/product-service/internal/config"
 	"github.com/arvians-id/go-microservice/product-service/internal/pb"
+	"github.com/arvians-id/go-microservice/product-service/internal/repository"
+	"github.com/arvians-id/go-microservice/product-service/internal/service"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 )
 
-func NewInitializedDatabase(configuration config.Config) (*sql.DB, error) {
+func NewInitializedDatabase(configuration *config.Config) (*sql.DB, error) {
 	db, err := config.NewPostgresSQL(configuration)
 	if err != nil {
 		return nil, err
@@ -19,13 +22,20 @@ func NewInitializedDatabase(configuration config.Config) (*sql.DB, error) {
 	return db, nil
 }
 
-func NewInitializedServer(configuration config.Config) (pb.ProductServiceServer, error) {
-	_, err := NewInitializedDatabase(configuration)
+func NewInitializedServer(configuration *config.Config) (pb.ProductServiceServer, error) {
+	db, err := NewInitializedDatabase(configuration)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	// Another service
+	userService := client.InitializeUserServiceClient(configuration)
+
+	// Main App
+	productRepository := repository.NewProductRepository()
+	productService := service.NewProductService(productRepository, userService, db)
+
+	return productService, nil
 }
 
 func main() {

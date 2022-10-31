@@ -9,7 +9,7 @@ type Config struct {
 	UserSvcUrl    string `mapstructure:"USER_SERVICE"`
 }
 
-func LoadConfig() (c Config, err error) {
+func LoadConfig() (c *Config, err error) {
 	viper.AddConfigPath("./pkg/config/envs")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")

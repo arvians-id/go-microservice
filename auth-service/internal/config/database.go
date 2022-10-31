@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func NewPostgresSQL(configuration Config) (*sql.DB, error) {
+func NewPostgresSQL(configuration *Config) (*sql.DB, error) {
 	username := configuration.DBUsername
 	password := configuration.DBPassword
 	host := configuration.DBHost
@@ -34,7 +34,7 @@ func NewPostgresSQL(configuration Config) (*sql.DB, error) {
 	return db, nil
 }
 
-func databasePooling(configuration Config, db *sql.DB) (*sql.DB, error) {
+func databasePooling(configuration *Config, db *sql.DB) (*sql.DB, error) {
 	// Limit connection with db pooling
 	setMaxIdleConns := configuration.DBPoolMin
 	setMaxOpenConns := configuration.DBPoolMax

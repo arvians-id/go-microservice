@@ -4,6 +4,7 @@ import "github.com/spf13/viper"
 
 type Config struct {
 	Port                string `mapstructure:"PORT"`
+	UserSvcUrl          string `mapstructure:"USER_SERVICE"`
 	DBConnection        string `mapstructure:"DB_CONNECTION"`
 	DBHost              string `mapstructure:"DB_HOST"`
 	DBPort              string `mapstructure:"DB_PORT"`
@@ -18,7 +19,7 @@ type Config struct {
 	JwtSecretKey        string `mapstructure:"JWT_SECRET_KEY"`
 }
 
-func LoadConfig() (c Config, err error) {
+func LoadConfig() (c *Config, err error) {
 	viper.AddConfigPath("./internal/config/envs")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")

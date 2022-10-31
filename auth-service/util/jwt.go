@@ -20,7 +20,7 @@ type JwtClaims struct {
 	Name  string
 }
 
-func NewJwtWrapper(config config.Config) *JwtWrapper {
+func NewJwtWrapper(config *config.Config) *JwtWrapper {
 	return &JwtWrapper{
 		SecretKey:       config.JwtSecretKey,
 		Issuer:          "auth-service",
