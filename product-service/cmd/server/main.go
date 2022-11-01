@@ -7,6 +7,7 @@ import (
 	"github.com/arvians-id/go-microservice/product-service/internal/config"
 	"github.com/arvians-id/go-microservice/product-service/internal/pb"
 	"github.com/arvians-id/go-microservice/product-service/internal/repository"
+	"github.com/arvians-id/go-microservice/product-service/internal/server"
 	"github.com/arvians-id/go-microservice/product-service/internal/service"
 	"google.golang.org/grpc"
 	"log"
@@ -34,8 +35,9 @@ func NewInitializedServer(configuration *config.Config) (pb.ProductServiceServer
 	// Main App
 	productRepository := repository.NewProductRepository()
 	productService := service.NewProductService(productRepository, userService, db)
+	productServer := server.NewProductServer(productService)
 
-	return productService, nil
+	return productServer, nil
 }
 
 func main() {

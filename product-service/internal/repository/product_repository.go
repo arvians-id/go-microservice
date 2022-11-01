@@ -13,7 +13,7 @@ func NewProductRepository() ProductRepository {
 	return &ProductRepositoryImpl{}
 }
 
-func (p ProductRepositoryImpl) ListProduct(ctx context.Context, tx *sql.Tx) ([]*model.Product, error) {
+func (repository *ProductRepositoryImpl) ListProduct(ctx context.Context, tx *sql.Tx) ([]*model.Product, error) {
 	query := `SELECT p.*, u.id, u.name, u.email FROM products p LEFT JOIN users u ON p.created_by = u.id`
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
@@ -41,7 +41,7 @@ func (p ProductRepositoryImpl) ListProduct(ctx context.Context, tx *sql.Tx) ([]*
 	return products, nil
 }
 
-func (p ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql.Tx, id int64) (*model.Product, error) {
+func (repository *ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql.Tx, id int64) (*model.Product, error) {
 	query := `SELECT p.*, u.id, u.name, u.email FROM products p LEFT JOIN users u ON p.created_by = u.id WHERE p.id = $1`
 	row := tx.QueryRowContext(ctx, query, id)
 
@@ -64,7 +64,7 @@ func (p ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql.Tx, id in
 	return &product, nil
 }
 
-func (p ProductRepositoryImpl) CreateProduct(ctx context.Context, tx *sql.Tx, product *model.Product) (*model.Product, error) {
+func (repository *ProductRepositoryImpl) CreateProduct(ctx context.Context, tx *sql.Tx, product *model.Product) (*model.Product, error) {
 	var id int64
 	query := `INSERT INTO products (name, description, created_by) VALUES ($1, $2, $3) RETURNING id`
 	row := tx.QueryRowContext(ctx, query, product.Name, product.Description, product.CreatedBy)
@@ -78,7 +78,7 @@ func (p ProductRepositoryImpl) CreateProduct(ctx context.Context, tx *sql.Tx, pr
 	return product, nil
 }
 
-func (p ProductRepositoryImpl) UpdateProduct(ctx context.Context, tx *sql.Tx, product *model.Product) (*model.Product, error) {
+func (repository *ProductRepositoryImpl) UpdateProduct(ctx context.Context, tx *sql.Tx, product *model.Product) (*model.Product, error) {
 	query := `UPDATE products SET name = $1, description = $2 WHERE id = $3`
 	_, err := tx.ExecContext(ctx, query, product.Name, product.Description, product.Id)
 	if err != nil {
@@ -88,7 +88,7 @@ func (p ProductRepositoryImpl) UpdateProduct(ctx context.Context, tx *sql.Tx, pr
 	return product, nil
 }
 
-func (p ProductRepositoryImpl) DeleteProduct(ctx context.Context, tx *sql.Tx, id int64) error {
+func (repository *ProductRepositoryImpl) DeleteProduct(ctx context.Context, tx *sql.Tx, id int64) error {
 	query := `DELETE FROM products WHERE id = $1`
 	_, err := tx.ExecContext(ctx, query, id)
 	if err != nil {

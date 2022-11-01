@@ -2,10 +2,14 @@ FROM golang:1.17-alpine
 
 WORKDIR /app
 
+COPY ./cmd/server/main.go .
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . .
 
-RUN go build -o /user-service/cmd/server
+RUN go build -o main .
 
-EXPOSE 8080
+EXPOSE 50053
 
-CMD ./user-service/cmd/server
+CMD ["./main"]

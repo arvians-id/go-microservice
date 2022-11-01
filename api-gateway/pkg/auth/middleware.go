@@ -12,10 +12,12 @@ type MiddlewareAuthConfig struct {
 }
 
 func NewMiddlewareAuthConfig(client *ServiceClient) *MiddlewareAuthConfig {
-	return &MiddlewareAuthConfig{ServiceClient: client}
+	return &MiddlewareAuthConfig{
+		ServiceClient: client,
+	}
 }
 
-func (m *MiddlewareAuthConfig) AuthRequired(ctx *gin.Context) {
+func (middleware *MiddlewareAuthConfig) AuthRequired(ctx *gin.Context) {
 	authorization := ctx.GetHeader("Authorization")
 	if authorization == "" {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authorization header is required"})
@@ -28,7 +30,7 @@ func (m *MiddlewareAuthConfig) AuthRequired(ctx *gin.Context) {
 		return
 	}
 
-	res, err := m.ServiceClient.Client.Validate(ctx, &pb.ValidateRequest{
+	res, err := middleware.ServiceClient.AuthClient.Validate(ctx, &pb.ValidateRequest{
 		Token: token[1],
 	})
 	if err != nil {

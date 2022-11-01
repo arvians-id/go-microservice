@@ -17,9 +17,9 @@ func main() {
 
 	r := gin.Default()
 
-	authSvc := *auth.RegisterRoutes(r, configuration)
-	user.RegisterRoutes(r, configuration, &authSvc)
-	product.RegisterRoutes(r, configuration, &authSvc)
+	authSvc := auth.RegisterRoutes(r, configuration)
+	user.RegisterRoutes(r, configuration, authSvc)
+	product.RegisterRoutes(r, configuration, authSvc)
 
 	err = r.Run(configuration.Port)
 	if err != nil {

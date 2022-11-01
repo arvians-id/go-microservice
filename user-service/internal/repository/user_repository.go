@@ -13,7 +13,7 @@ func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (u UserRepositoryImpl) ListUser(ctx context.Context, tx *sql.Tx) ([]*model.User, error) {
+func (repository *UserRepositoryImpl) ListUser(ctx context.Context, tx *sql.Tx) ([]*model.User, error) {
 	query := `SELECT id, name, email FROM users`
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
@@ -33,7 +33,7 @@ func (u UserRepositoryImpl) ListUser(ctx context.Context, tx *sql.Tx) ([]*model.
 	return users, nil
 }
 
-func (u UserRepositoryImpl) GetUser(ctx context.Context, tx *sql.Tx, id int64) (*model.User, error) {
+func (repository *UserRepositoryImpl) GetUser(ctx context.Context, tx *sql.Tx, id int64) (*model.User, error) {
 	query := `SELECT id, name, email FROM users WHERE id = $1`
 	row := tx.QueryRowContext(ctx, query, id)
 
@@ -46,7 +46,7 @@ func (u UserRepositoryImpl) GetUser(ctx context.Context, tx *sql.Tx, id int64) (
 	return &user, nil
 }
 
-func (u UserRepositoryImpl) CreateUser(ctx context.Context, tx *sql.Tx, user *model.User) (*model.User, error) {
+func (repository *UserRepositoryImpl) CreateUser(ctx context.Context, tx *sql.Tx, user *model.User) (*model.User, error) {
 	var id int64
 	query := `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`
 	err := tx.QueryRowContext(ctx, query, user.Name, user.Email, user.Password).Scan(&id)
@@ -58,7 +58,7 @@ func (u UserRepositoryImpl) CreateUser(ctx context.Context, tx *sql.Tx, user *mo
 	return user, nil
 }
 
-func (u UserRepositoryImpl) UpdateUser(ctx context.Context, tx *sql.Tx, user *model.User) (*model.User, error) {
+func (repository *UserRepositoryImpl) UpdateUser(ctx context.Context, tx *sql.Tx, user *model.User) (*model.User, error) {
 	query := `UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4`
 	_, err := tx.ExecContext(ctx, query, user.Name, user.Email, user.Password, user.Id)
 	if err != nil {
@@ -68,7 +68,7 @@ func (u UserRepositoryImpl) UpdateUser(ctx context.Context, tx *sql.Tx, user *mo
 	return user, nil
 }
 
-func (u UserRepositoryImpl) DeleteUser(ctx context.Context, tx *sql.Tx, id int64) error {
+func (repository *UserRepositoryImpl) DeleteUser(ctx context.Context, tx *sql.Tx, id int64) error {
 	query := `DELETE FROM users WHERE id = $1`
 	_, err := tx.ExecContext(ctx, query, id)
 	if err != nil {

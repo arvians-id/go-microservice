@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package product;
 
-option go_package = "./pkg/product/pb";
+option go_package = "./api-gateway/pkg/product/pb";
 
 import "google/protobuf/Empty.proto";
 

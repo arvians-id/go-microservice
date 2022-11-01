@@ -24,11 +24,14 @@ services:
     expose:
       - "8080"
     env_file:
-      - ./api-gateway/pkg/config/envs/dev.env
+      - ./api-gateway/pkg/config/envs/prod.env
     networks:
       - microservices
     depends_on:
       - db
+      - user_service
+      - product_service
+      - auth_service
     restart: always
   auth_service:
     build: ./auth-service
@@ -38,7 +41,7 @@ services:
     expose:
       - "50051"
     env_file:
-      - ./auth-service/internal/config/envs/dev.env
+      - ./auth-service/internal/config/envs/prod.env
     networks:
       - microservices
     depends_on:
@@ -52,7 +55,7 @@ services:
     expose:
       - "50052"
     env_file:
-      - ./product-service/internal/config/envs/dev.env
+      - ./product-service/internal/config/envs/prod.env
     networks:
       - microservices
     depends_on:
@@ -66,7 +69,7 @@ services:
     expose:
       - "50053"
     env_file:
-      - ./user-service/internal/config/envs/dev.env
+      - ./user-service/internal/config/envs/prod.env
     networks:
       - microservices
     depends_on:

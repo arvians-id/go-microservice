@@ -7,7 +7,6 @@ import (
 	"github.com/arvians-id/go-microservice/auth-service/internal/pb"
 	"github.com/arvians-id/go-microservice/auth-service/internal/repository"
 	"github.com/arvians-id/go-microservice/auth-service/util"
-	"net/http"
 )
 
 type AuthServiceImpl struct {
@@ -16,7 +15,7 @@ type AuthServiceImpl struct {
 	Jwt            util.JwtWrapper
 }
 
-func NewAuthService(authRepository repository.AuthRepository, db *sql.DB, jwt *util.JwtWrapper) pb.AuthServiceServer {
+func NewAuthService(authRepository repository.AuthRepository, db *sql.DB, jwt *util.JwtWrapper) AuthService {
 	return &AuthServiceImpl{
 		AuthRepository: authRepository,
 		DB:             db,
@@ -24,38 +23,35 @@ func NewAuthService(authRepository repository.AuthRepository, db *sql.DB, jwt *u
 	}
 }
 
-func (s *AuthServiceImpl) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
-	tx, err := s.DB.Begin()
+func (service *AuthServiceImpl) Login(ctx context.Context, req *pb.LoginRequest) (string, error) {
+	tx, err := service.DB.Begin()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer util.CommitOrRollback(tx)
 
-	responseLogin, err := s.AuthRepository.FindByEmail(ctx, tx, req.Email)
+	responseLogin, err := service.AuthRepository.FindByEmail(ctx, tx, req.Email)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	isMatch := util.CheckPasswordHash(req.Password, responseLogin.Password)
 	if !isMatch {
-		return nil, err
+		return "", err
 	}
 
-	token, err := s.Jwt.GenerateToken(responseLogin)
+	token, err := service.Jwt.GenerateToken(responseLogin)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return &pb.LoginResponse{
-		Status: http.StatusOK,
-		Token:  token,
-	}, nil
+	return token, nil
 }
 
-func (s *AuthServiceImpl) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	tx, err := s.DB.Begin()
+func (service *AuthServiceImpl) Register(ctx context.Context, req *pb.RegisterRequest) error {
+	tx, err := service.DB.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer util.CommitOrRollback(tx)
 
@@ -63,35 +59,30 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *pb.RegisterRequest)
 	user.Name = req.Name
 	user.Email = req.Email
 	user.Password = util.HashPassword(req.Password)
-	_, err = s.AuthRepository.Register(ctx, tx, &user)
+	_, err = service.AuthRepository.Register(ctx, tx, &user)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &pb.RegisterResponse{
-		Status: http.StatusOK,
-	}, nil
+	return nil
 }
 
-func (s *AuthServiceImpl) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.ValidateResponse, error) {
-	tx, err := s.DB.Begin()
+func (service *AuthServiceImpl) Validate(ctx context.Context, req *pb.ValidateRequest) (int64, error) {
+	tx, err := service.DB.Begin()
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 	defer util.CommitOrRollback(tx)
 
-	claims, err := s.Jwt.ValidateToken(req.Token)
+	claims, err := service.Jwt.ValidateToken(req.Token)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	responseUser, err := s.AuthRepository.FindByEmail(ctx, tx, claims.Email)
+	responseUser, err := service.AuthRepository.FindByEmail(ctx, tx, claims.Email)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	return &pb.ValidateResponse{
-		Status: http.StatusOK,
-		UserId: responseUser.Id,
-	}, nil
+	return responseUser.Id, nil
 }

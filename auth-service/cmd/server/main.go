@@ -6,6 +6,7 @@ import (
 	"github.com/arvians-id/go-microservice/auth-service/internal/config"
 	"github.com/arvians-id/go-microservice/auth-service/internal/pb"
 	"github.com/arvians-id/go-microservice/auth-service/internal/repository"
+	"github.com/arvians-id/go-microservice/auth-service/internal/server"
 	"github.com/arvians-id/go-microservice/auth-service/internal/service"
 	"github.com/arvians-id/go-microservice/auth-service/util"
 	"google.golang.org/grpc"
@@ -32,8 +33,9 @@ func NewInitializedServer(configuration *config.Config) (pb.AuthServiceServer, e
 	jwtUtil := util.NewJwtWrapper(configuration)
 	authRepository := repository.NewAuthRepository()
 	authService := service.NewAuthService(authRepository, db, jwtUtil)
+	authServer := server.NewAuthServer(authService, jwtUtil)
 
-	return authService, nil
+	return authServer, nil
 }
 
 func main() {

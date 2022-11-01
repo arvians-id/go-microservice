@@ -6,6 +6,7 @@ import (
 	"github.com/arvians-id/go-microservice/user-service/internal/config"
 	"github.com/arvians-id/go-microservice/user-service/internal/pb"
 	"github.com/arvians-id/go-microservice/user-service/internal/repository"
+	"github.com/arvians-id/go-microservice/user-service/internal/server"
 	"github.com/arvians-id/go-microservice/user-service/internal/service"
 	"google.golang.org/grpc"
 	"log"
@@ -30,8 +31,9 @@ func NewInitializedServer(configuration *config.Config) (pb.UserServiceServer, e
 	// Main App
 	userRepository := repository.NewUserRepository()
 	userService := service.NewUserService(userRepository, db)
+	userServer := server.NewUserServer(userService)
 
-	return userService, nil
+	return userServer, nil
 }
 
 func main() {
