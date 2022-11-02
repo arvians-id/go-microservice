@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "./adapter/pkg/product/pb";
+
+service ProductService {
+  rpc ListProduct(ListProductRequest) returns (stream Product);
+  rpc GetProduct(GetProductIdRequest) returns (GetProductResponse);
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+  rpc DeleteProduct(GetProductIdRequest) returns (DeleteProductResponse);
+}
+
+message UserService {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  int64 created_by = 4;
+  UserService user = 5;
+}
+
+message ListProductRequest {}
+
+message GetProductResponse {
+  Product data = 1;
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  int64 created_by = 3;
+}
+
+message CreateProductResponse {
+  int64 status = 1;
+  string error = 2;
+  int64 id = 3;
+}
+
+message UpdateProductRequest {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message UpdateProductResponse {
+  int64 status = 1;
+  string error = 2;
+}
+
+message GetProductIdRequest {
+  int64 id = 1;
+}
+
+message GetProductIdResponse {
+  int64 status = 1;
+  string error = 2;
+  Product data = 3;
+}
+
+message DeleteProductResponse {
+  int64 status = 1;
+  string error = 2;
+}
