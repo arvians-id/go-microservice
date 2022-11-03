@@ -46,6 +46,7 @@ services:
       - microservices
     depends_on:
       - db
+      - product_service
     restart: always
   product_service:
     build: ./services/product-service
@@ -60,6 +61,7 @@ services:
       - microservices
     depends_on:
       - db
+      - user_service
     restart: always
   user_service:
     build: ./services/user-service

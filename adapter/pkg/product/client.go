@@ -7,6 +7,7 @@ import (
 	"github.com/arvians-id/go-microservice/adapter/pkg/product/request"
 	"github.com/arvians-id/go-microservice/config"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"io"
 	"net/http"
@@ -43,7 +44,7 @@ func RegisterRoutes(r *gin.Engine, c *config.Config, authSvc *auth.ServiceClient
 }
 
 func (client *ServiceClient) ListProduct(ctx *gin.Context) {
-	response, err := client.ProductClient.ListProduct(ctx, &pb.ListProductRequest{})
+	response, err := client.ProductClient.ListProduct(ctx, new(empty.Empty))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

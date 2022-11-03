@@ -4,8 +4,10 @@ package product;
 
 option go_package = "./adapter/pkg/product/pb";
 
+import "google/protobuf/Empty.proto";
+
 service ProductService {
-  rpc ListProduct(ListProductRequest) returns (stream Product);
+  rpc ListProduct(google.protobuf.Empty) returns (stream Product);
   rpc GetProduct(GetProductIdRequest) returns (GetProductResponse);
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
   rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
@@ -25,8 +27,6 @@ message Product {
   int64 created_by = 4;
   UserService user = 5;
 }
-
-message ListProductRequest {}
 
 message GetProductResponse {
   Product data = 1;

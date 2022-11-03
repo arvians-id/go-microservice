@@ -6,6 +6,6 @@ COPY . .
 
 RUN go build -o adapter
 
-EXPOSE 50051
+EXPOSE 8080
 
 CMD ./adapter

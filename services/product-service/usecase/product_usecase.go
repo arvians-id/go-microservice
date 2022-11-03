@@ -8,6 +8,7 @@ import (
 	"github.com/arvians-id/go-microservice/model"
 	"github.com/arvians-id/go-microservice/services/product-service/repository"
 	"github.com/arvians-id/go-microservice/util"
+	"github.com/golang/protobuf/ptypes/empty"
 	"net/http"
 )
 
@@ -25,7 +26,7 @@ func NewProductService(productRepository repository.ProductRepository, userServi
 	}
 }
 
-func (p ProductService) ListProduct(req *pb.ListProductRequest, stream pb.ProductService_ListProductServer) error {
+func (p ProductService) ListProduct(empty *empty.Empty, stream pb.ProductService_ListProductServer) error {
 	tx, err := p.DB.Begin()
 	if err != nil {
 		return err
