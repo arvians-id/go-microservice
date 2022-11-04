@@ -7,6 +7,7 @@ type Product struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	CreatedBy   int64  `json:"created_by"`
+	Image       string `json:"image"`
 	User        *User  `json:"user"`
 }
 
@@ -16,6 +17,7 @@ func (p *Product) ToProtoBuffer() *pb.Product {
 		Name:        p.Name,
 		Description: p.Description,
 		CreatedBy:   p.CreatedBy,
+		Image:       p.Image,
 		User: &pb.UserService{
 			Id:    p.User.Id,
 			Name:  p.User.Name,

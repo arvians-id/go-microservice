@@ -8,6 +8,7 @@ import (
 	"github.com/arvians-id/go-microservice/services/product-service/client"
 	"github.com/arvians-id/go-microservice/services/product-service/repository"
 	"github.com/arvians-id/go-microservice/services/product-service/usecase"
+	"github.com/arvians-id/go-microservice/util"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -28,12 +29,15 @@ func NewInitializedServer(configuration *config.Config) (pb.ProductServiceServer
 		return nil, err
 	}
 
+	//Utils
+	storageS3 := util.NewStorageS3(configuration)
+
 	// Another service
 	userService := client.InitializeUserServiceClient(configuration)
 
 	// Main App
 	productRepository := repository.NewProductRepository()
-	productService := usecase.NewProductService(productRepository, userService, db)
+	productService := usecase.NewProductService(productRepository, userService, storageS3, db)
 
 	return productService, nil
 }

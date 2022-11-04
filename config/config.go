@@ -19,6 +19,10 @@ type Config struct {
 	DBMaxIdleTimeSecond int    `mapstructure:"DATABASE_MAX_IDLE_TIME_SECOND"`
 	DBMaxLifeTimeSecond int    `mapstructure:"DATABASE_MAX_LIFE_TIME_SECOND"`
 	JwtSecretKey        string `mapstructure:"JWT_SECRET_KEY"`
+	AwsAccessKeyId      string `mapstructure:"AWS_ACCESS_KEY_ID"`
+	AwsSecretKey        string `mapstructure:"AWS_SECRET_KEY"`
+	AwsRegion           string `mapstructure:"AWS_REGION"`
+	AwsBucket           string `mapstructure:"AWS_BUCKET"`
 }
 
 func LoadConfig(filenames ...string) (c *Config, err error) {

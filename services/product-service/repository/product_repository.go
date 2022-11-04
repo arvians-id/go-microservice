@@ -30,6 +30,7 @@ func (repository *ProductRepositoryImpl) ListProduct(ctx context.Context, tx *sq
 			&product.Name,
 			&product.Description,
 			&product.CreatedBy,
+			&product.Image,
 			&product.User.Id,
 			&product.User.Name,
 			&product.User.Email,
@@ -53,6 +54,7 @@ func (repository *ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql
 		&product.Name,
 		&product.Description,
 		&product.CreatedBy,
+		&product.Image,
 		&product.User.Id,
 		&product.User.Name,
 		&product.User.Email,
@@ -66,8 +68,8 @@ func (repository *ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql
 
 func (repository *ProductRepositoryImpl) CreateProduct(ctx context.Context, tx *sql.Tx, product *model.Product) (*model.Product, error) {
 	var id int64
-	query := `INSERT INTO products (name, description, created_by) VALUES ($1, $2, $3) RETURNING id`
-	row := tx.QueryRowContext(ctx, query, product.Name, product.Description, product.CreatedBy)
+	query := `INSERT INTO products (name, description, created_by, image) VALUES ($1, $2, $3, $4) RETURNING id`
+	row := tx.QueryRowContext(ctx, query, product.Name, product.Description, product.CreatedBy, product.Image)
 	err := row.Scan(&id)
 	if err != nil {
 		return nil, err
@@ -79,8 +81,8 @@ func (repository *ProductRepositoryImpl) CreateProduct(ctx context.Context, tx *
 }
 
 func (repository *ProductRepositoryImpl) UpdateProduct(ctx context.Context, tx *sql.Tx, product *model.Product) (*model.Product, error) {
-	query := `UPDATE products SET name = $1, description = $2 WHERE id = $3`
-	_, err := tx.ExecContext(ctx, query, product.Name, product.Description, product.Id)
+	query := `UPDATE products SET name = $1, description = $2, image = $3 WHERE id = $4`
+	_, err := tx.ExecContext(ctx, query, product.Name, product.Description, product.Image, product.Id)
 	if err != nil {
 		return nil, err
 	}

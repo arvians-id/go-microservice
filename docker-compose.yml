@@ -16,67 +16,67 @@ services:
     networks:
       - microservices
     restart: always
-  adapter:
-    build: ./adapter
-    container_name: go_microservice_api_gateway
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    env_file:
-      - ./config/envs/prod.env
-    networks:
-      - microservices
-    depends_on:
-      - db
-      - user_service
-      - product_service
-      - auth_service
-    restart: always
-  auth_service:
-    build: ./services/auth-service
-    container_name: go_microservice_auth_service
-    ports:
-      - "50051:50051"
-    expose:
-      - "50051"
-    env_file:
-      - ./config/envs/prod.env
-    networks:
-      - microservices
-    depends_on:
-      - db
-      - product_service
-    restart: always
-  product_service:
-    build: ./services/product-service
-    container_name: go_microservice_product_service
-    ports:
-      - "50052:50052"
-    expose:
-      - "50052"
-    env_file:
-      - ./config/envs/prod.env
-    networks:
-      - microservices
-    depends_on:
-      - db
-      - user_service
-    restart: always
-  user_service:
-    build: ./services/user-service
-    container_name: go_microservice_user_service
-    ports:
-      - "50053:50053"
-    expose:
-      - "50053"
-    env_file:
-      - ./config/envs/prod.env
-    networks:
-      - microservices
-    depends_on:
-      - db
-    restart: always
+#  adapter:
+#    build: ./adapter
+#    container_name: go_microservice_api_gateway
+#    ports:
+#      - "8080:8080"
+#    expose:
+#      - "8080"
+#    env_file:
+#      - ./config/envs/prod.env
+#    networks:
+#      - microservices
+#    depends_on:
+#      - db
+#      - user_service
+#      - product_service
+#      - auth_service
+#    restart: always
+#  auth_service:
+#    build: ./services/auth-service
+#    container_name: go_microservice_auth_service
+#    ports:
+#      - "50051:50051"
+#    expose:
+#      - "50051"
+#    env_file:
+#      - ./config/envs/prod.env
+#    networks:
+#      - microservices
+#    depends_on:
+#      - db
+#      - product_service
+#    restart: always
+#  product_service:
+#    build: ./services/product-service
+#    container_name: go_microservice_product_service
+#    ports:
+#      - "50052:50052"
+#    expose:
+#      - "50052"
+#    env_file:
+#      - ./config/envs/prod.env
+#    networks:
+#      - microservices
+#    depends_on:
+#      - db
+#      - user_service
+#    restart: always
+#  user_service:
+#    build: ./services/user-service
+#    container_name: go_microservice_user_service
+#    ports:
+#      - "50053:50053"
+#    expose:
+#      - "50053"
+#    env_file:
+#      - ./config/envs/prod.env
+#    networks:
+#      - microservices
+#    depends_on:
+#      - db
+#    restart: always
 
 networks:
   microservices:

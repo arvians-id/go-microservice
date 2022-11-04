@@ -25,7 +25,8 @@ message Product {
   string name = 2;
   string description = 3;
   int64 created_by = 4;
-  UserService user = 5;
+  string image = 5;
+  UserService user = 6;
 }
 
 message GetProductResponse {
@@ -36,6 +37,7 @@ message CreateProductRequest {
   string name = 1;
   string description = 2;
   int64 created_by = 3;
+  string image = 4;
 }
 
 message CreateProductResponse {
@@ -48,6 +50,7 @@ message UpdateProductRequest {
   int64 id = 1;
   string name = 2;
   string description = 3;
+  string image = 4;
 }
 
 message UpdateProductResponse {

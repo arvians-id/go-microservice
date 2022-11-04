@@ -6,16 +6,19 @@ import (
 	"github.com/arvians-id/go-microservice/adapter/pkg/product/pb"
 	"github.com/arvians-id/go-microservice/adapter/pkg/product/request"
 	"github.com/arvians-id/go-microservice/config"
+	"github.com/arvians-id/go-microservice/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 type ServiceClient struct {
 	ProductClient pb.ProductServiceClient
+	StorageS3     *util.StorageS3
 }
 
 func NewProductServiceClient(c *config.Config) pb.ProductServiceClient {
@@ -27,10 +30,11 @@ func NewProductServiceClient(c *config.Config) pb.ProductServiceClient {
 	return pb.NewProductServiceClient(connection)
 }
 
-func RegisterRoutes(r *gin.Engine, c *config.Config, authSvc *auth.ServiceClient) *ServiceClient {
+func RegisterRoutes(r *gin.Engine, c *config.Config, authSvc *auth.ServiceClient, storageS3 *util.StorageS3) *ServiceClient {
 	authMiddleware := auth.NewMiddlewareAuthConfig(authSvc)
 	svc := &ServiceClient{
 		ProductClient: NewProductServiceClient(c),
+		StorageS3:     storageS3,
 	}
 
 	routeGroup := r.Group("/product", authMiddleware.AuthRequired)
@@ -86,8 +90,21 @@ func (client *ServiceClient) GetProduct(ctx *gin.Context) {
 }
 
 func (client *ServiceClient) CreateProduct(ctx *gin.Context) {
+	file, header, err := ctx.Request.FormFile("image")
+	filePath := client.StorageS3.DefaultPath()
+	if err == nil {
+		path, fileName := client.StorageS3.GenerateNewFile(header.Filename)
+		go func() {
+			err = client.StorageS3.UploadToAWS(file, fileName, header.Header.Get("Content-Type"))
+			if err != nil {
+				log.Println("[Product][Create][UploadFileS3Test] error upload file S3, err: ", err.Error())
+			}
+		}()
+		filePath = path
+	}
+
 	var req request.CreateProductRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBind(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -96,6 +113,7 @@ func (client *ServiceClient) CreateProduct(ctx *gin.Context) {
 		Name:        req.Name,
 		Description: req.Description,
 		CreatedBy:   req.CreatedBy,
+		Image:       filePath,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -106,8 +124,21 @@ func (client *ServiceClient) CreateProduct(ctx *gin.Context) {
 }
 
 func (client *ServiceClient) UpdateProduct(ctx *gin.Context) {
+	file, header, err := ctx.Request.FormFile("image")
+	var filePath string
+	if err == nil {
+		path, fileName := client.StorageS3.GenerateNewFile(header.Filename)
+		go func() {
+			err = client.StorageS3.UploadToAWS(file, fileName, header.Header.Get("Content-Type"))
+			if err != nil {
+				log.Println("[Product][Create][UploadFileS3Test] error upload file S3, err: ", err.Error())
+			}
+		}()
+		filePath = path
+	}
+
 	var req request.UpdateProductRequest
-	err := ctx.BindJSON(&req)
+	err = ctx.ShouldBind(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -123,6 +154,7 @@ func (client *ServiceClient) UpdateProduct(ctx *gin.Context) {
 		Id:          id,
 		Name:        req.Name,
 		Description: req.Description,
+		Image:       filePath,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -15,13 +15,15 @@ import (
 type ProductService struct {
 	ProductRepository repository.ProductRepository
 	UserService       userpb.UserServiceClient
+	StorageS3         util.StorageS3
 	DB                *sql.DB
 }
 
-func NewProductService(productRepository repository.ProductRepository, userService userpb.UserServiceClient, db *sql.DB) pb.ProductServiceServer {
+func NewProductService(productRepository repository.ProductRepository, userService userpb.UserServiceClient, storageS3 *util.StorageS3, db *sql.DB) pb.ProductServiceServer {
 	return &ProductService{
 		ProductRepository: productRepository,
 		UserService:       userService,
+		StorageS3:         *storageS3,
 		DB:                db,
 	}
 }
@@ -93,6 +95,7 @@ func (p ProductService) CreateProduct(ctx context.Context, req *pb.CreateProduct
 		Name:        req.Name,
 		Description: req.Description,
 		CreatedBy:   req.CreatedBy,
+		Image:       req.Image,
 	})
 	if err != nil {
 		return nil, err
@@ -111,15 +114,21 @@ func (p ProductService) UpdateProduct(ctx context.Context, req *pb.UpdateProduct
 	}
 	defer util.CommitOrRollback(tx)
 
-	_, err = p.ProductRepository.GetProduct(ctx, tx, req.Id)
+	product, err := p.ProductRepository.GetProduct(ctx, tx, req.Id)
 	if err != nil {
 		return nil, err
+	}
+
+	if req.Image != "" {
+		_ = p.StorageS3.DeleteFromAWS(product.Image)
+		product.Image = req.Image
 	}
 
 	_, err = p.ProductRepository.UpdateProduct(ctx, tx, &model.Product{
 		Id:          req.Id,
 		Name:        req.Name,
 		Description: req.Description,
+		Image:       product.Image,
 	})
 	if err != nil {
 		return nil, err
